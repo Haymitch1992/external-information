@@ -6,13 +6,14 @@
         v-if="index !== heatDataSave.colorList.length - 1"
         :style="{ background: `rgba(${item},0.3)` }"
       >
-        ＜ {{ heatDataSave.rule[index] }}</span
-      >
+        <i>{{ heatDataSave.rule[index] }}</i>
+      </span>
       <span
         v-if="index == heatDataSave.colorList.length - 1"
         :style="{ background: `rgba(${item},0.3)` }"
-        >{{ heatDataSave.rule[index - 1] }}以上</span
       >
+        <!-- <i>{{ heatDataSave.rule[index - 1] }}以上</i> -->
+      </span>
     </li>
   </ul>
 </template>
@@ -38,7 +39,7 @@ import iconMetro from '../assets/metrodot.png'
 import iconBicycle from '../assets/bicycle.png'
 import iconParking from '../assets/parking.png'
 
-const emit = defineEmits(['positionDotEvt', 'clickBus','clickPark'])
+const emit = defineEmits(['positionDotEvt', 'clickBus', 'clickPark'])
 
 let map: any = null // 地图对象
 let vectorLayer: any = null
@@ -602,13 +603,22 @@ defineExpose({
   margin: 0;
   li {
     display: inline-block;
-    padding: 0;
+    padding: 4px 0 10px;
     margin: 0;
     span {
       display: inline-block;
       width: 80px;
       font-size: 12px;
       text-align: center;
+      position: relative;
+      vertical-align: top;
+      height: 16px;
+
+      i {
+        position: absolute;
+        top: 20px;
+        left: 70px;
+      }
     }
   }
 }

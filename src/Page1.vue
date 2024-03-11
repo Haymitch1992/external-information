@@ -138,15 +138,14 @@
               >风速<i>{{ (Number(focusDotInfoBj.valueFengSu) * 0.01).toFixed(2) }} m/s</i></span
             >
             <span
+              >风向<i>{{ focusDotInfoBj.valueFengXiang }} 度</i></span
+            >
+            <span
               >气压 <i>{{ focusDotInfoBj.valueQiYa }} pa</i></span
             >
 
             <span
               >湿度<i>{{ focusDotInfoBj.valueShiDu }} %</i></span
-            >
-
-            <span
-              >风向<i>{{ focusDotInfoBj.valueFengXiang }} 度</i></span
             >
           </div>
         </div>
@@ -285,14 +284,14 @@
       <span :class="{ active: currentLayer === '风速' }" @click="apiWeatherLayerData('风速')"
         >风速</span
       >
+      <span :class="{ active: currentLayer === '风向' }" @click="apiWeatherLayerData('风向')"
+        >风向</span
+      >
       <span :class="{ active: currentLayer === '湿度' }" @click="apiWeatherLayerData('湿度')"
         >湿度</span
       >
       <span :class="{ active: currentLayer === '气压' }" @click="apiWeatherLayerData('气压')"
         >气压</span
-      >
-      <span :class="{ active: currentLayer === '风向' }" @click="apiWeatherLayerData('风向')"
-        >风向</span
       >
     </div>
   </div>
@@ -365,7 +364,7 @@ const handleClickWarningList = (type) => {
 const sumData = ref({
   stopCount: 0,
   busCount: 0,
-  berthTotal: 3306
+  berthTotal: 0
 })
 const handleClose = (done: () => void) => {
   dialogVisible.value = false
@@ -458,11 +457,14 @@ onMounted(async () => {
   await apiStationLocData()
   await apiBeijingWeather()
   apiBicycleSum()
+  apiBusSum()
+  apiParkSum()
   var timerapiBicycleSum = setInterval(() => {
     apiBicycleSum()
     apiBusSum()
+    apiParkSum()
   }, 1000 * 30)
-  apiBusSum()
+
   _combineBaseData()
   apiBusDotInfoInAll()
   apiParkingDotInfoInAll()
@@ -833,6 +835,13 @@ function apiBusSum() {
   })
 }
 
+function apiParkSum() {
+  //gis/Parksberth/sum
+  return api.get(`/tctapi/gis/Parksberth/sum`).then((res: any) => {
+    let data = res.data
+    sumData.value.berthTotal = data.data[0].berthStatus
+  })
+}
 /**
  * 2.1.2.4 天气预警
  */
@@ -1154,7 +1163,7 @@ i::selection {
 .weather-btn {
   background-color: #fff;
   position: fixed;
-  bottom: 48px;
+  bottom: 62px;
   left: 380px;
   padding: 6px 2px;
   border-radius: 2px;
@@ -1173,6 +1182,9 @@ i::selection {
     border-radius: 4px;
     margin: 0 4px;
     cursor: pointer;
+  }
+  .active {
+    background: #2aba9a;
   }
   span:hover {
     background: #165264;
