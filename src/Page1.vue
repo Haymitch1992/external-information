@@ -252,9 +252,21 @@
             <!-- {{ scope.row.direction == 0 ? '上行' : '下行' }} -->
           </template>
         </el-table-column>
-        <el-table-column prop="fullLoad" label="车辆满载率" />
-        <el-table-column prop="distance" label="到站距离" />
-        <el-table-column prop="travelTime" label="到站时间" />
+        <el-table-column prop="fullLoad" label="车辆满载率(%)">
+          <template #default="scope">
+            {{ scope.row.fullLoad ? scope.row.fullLoad * 100 : '' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="distance" label="到站距离(米)">
+          <template #default="scope">
+            {{ scope.row.distance === '-1' ? '已到站' : scope.row.distance }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="travelTime" label="到站时间(秒)">
+          <template #default="scope">
+            {{ scope.row.travelTime === '-1' ? '已到站' : scope.row.travelTime }}
+          </template>
+        </el-table-column>
       </el-table>
     </el-dialog>
 
@@ -487,7 +499,7 @@ function apiBusStopForcast(busName, busLineName) {
   saveBusInfo.value.busLineName = busLineName
   return api
     .post(`/tctapi/gis/BusStopForcast`, {
-      busstopName: busName,
+      busStopName: busName,
       lineNames: [busLineName]
     })
     .then((res: any) => {
