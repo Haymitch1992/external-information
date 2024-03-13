@@ -129,7 +129,7 @@
           <h3>气象数据</h3>
           <div class="bj-item">
             <span
-              >温度<i>{{ Math.ceil(focusDotInfoBj.valueWenDu / 100) }} ℃</i></span
+              >温度<i>{{ Math.ceil(focusDotInfoBj.valueWenDu) }} ℃</i></span
             >
             <span
               >降水<i>{{ focusDotInfoBj.valueJiangShui }} mm</i></span
@@ -205,7 +205,7 @@
     >
       <div class="dataDetail">
         <h3>车站天气</h3>
-        <span>温度{{ Math.ceil(focusDotInfo.valueWenDu / 100) }} ℃</span>
+        <span>温度{{ Math.ceil(focusDotInfo.valueWenDu) }} ℃</span>
         <span>降水{{ focusDotInfo.valueJiangShui }} mm</span>
         <span>风速{{ (Number(focusDotInfo.valueFengSu) * 0.01).toFixed(2) }} m/s</span>
         <span>湿度{{ focusDotInfo.valueShiDu }} %</span>
@@ -228,14 +228,21 @@
             </template>
           </el-table-column>
         </el-table>
-        <h3>停车场</h3>
-        <el-table border :data="allParking.value" size="small" style="width: 100%">
-          <!-- <el-table-column prop="date" label="事件时间" /> -->
-          <el-table-column prop="parkName" label="停车场名称" />
-          <el-table-column prop="parkAddress" label="地址" />
-          <el-table-column prop="berthTotal" label="车位总数" />
-          <el-table-column prop="berthStatus" label="车位可用数" />
-        </el-table>
+        <div>
+          <h3>停车场</h3>
+
+          <el-table border :data="allParking" size="small" style="width: 100%">
+            <!-- <el-table-column prop="date" label="事件时间" /> -->
+            <el-table-column prop="parkName" label="停车场名称" />
+            <el-table-column prop="parkAddress" label="地址" />
+            <el-table-column prop="berthTotal" label="车位总数" />
+            <el-table-column prop="berthStatus" label="车位可用数">
+              <!-- <template #default="scope">
+                <span>{{ scope.row.berthTotal - 53 }}</span>
+              </template> -->
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
     </el-dialog>
 
@@ -277,12 +284,16 @@
       width="1000"
       :before-close="handleClose4"
     >
-      <el-table border :data="allParking.value" size="small" style="width: 100%">
+      <el-table border :data="allParking" size="small" style="width: 100%">
         <!-- <el-table-column prop="date" label="事件时间" /> -->
         <el-table-column prop="parkName" label="停车场名称" />
         <el-table-column prop="parkAddress" label="地址" />
         <el-table-column prop="berthTotal" label="车位总数" />
-        <el-table-column prop="berthStatus" label="车位可用数" />
+        <el-table-column prop="berthStatus" label="车位可用数">
+          <!-- <template #default="scope">
+            <span>{{ scope.row.berthTotal - 53 }}</span>
+          </template> -->
+        </el-table-column>
       </el-table>
     </el-dialog>
     <!-- 气象图层 -->
@@ -342,7 +353,7 @@ let allStationLoc: any = []
 let lineAllBusDot: any = [] //全线网公交车
 let allBusDot: any = [] //地铁站周边800米全部公交车
 let lineAllParking: any = [] //全线网停车站
-let allParking: any = [] // 周边停车场
+const allParking: any = ref([]) // 周边停车场
 const saveBusInfo = ref({
   busName: '',
   busLineName: '',
@@ -402,7 +413,9 @@ const clickParkFn = (parkId) => {
   dialogVisible4.value = true
   lineAllParking.value.forEach((item) => {
     if (parkId === item.parkId) {
-      allParking.value = [item]
+      // allParking.value = [item]
+      console.log('查询当前车站', item.parkName)
+      apiParkDetail(item.parkName)
     }
   })
 }
@@ -424,7 +437,7 @@ const rule = [
   },
   {
     label: '温度',
-    arr: [-16, -8, 0, 8, 16, 24, 32],
+    arr: [-16, -8, 0, 8, 16, 24, 35],
     colorList: [
       '3, 45, 137',
       '125, 206, 244',
@@ -722,16 +735,6 @@ async function apiWeatherData() {
               .slice(0, 10)
           : []
       } else {
-        listWeather.value = [
-          { value0: '3月8日', value1: '-2~11℃', value2: '晴' },
-          { value0: '3月9日', value1: '-2~13℃', value2: '晴' },
-          { value0: '3月10日', value1: '0~14℃', value2: '晴' },
-          { value0: '3月11日', value1: '2~15℃', value2: '多云转晴' },
-          { value0: '3月12日', value1: '3~16℃', value2: '晴' },
-          { value0: '3月13日', value1: '3~17℃', value2: '晴' },
-          { value0: '3月14日', value1: '3~17℃', value2: '晴' },
-          { value0: '3月15日', value1: '6~19℃', value2: '晴' }
-        ]
       }
     } else {
       ElMessage.error(`获取数据时发生异常：${data.msg}`)
@@ -811,6 +814,7 @@ function apiParkingInfoIn800m(lat: Number, lon: Number, sname: string) {
       allParking.value = data.data
       instance.refs.mapMain.updateLayerParking(allParking.value, showMetroDot.value)
     } else {
+      allParking.value = []
       ElMessage.error(`获取数据时发生异常：${data.msg}`)
     }
   })
@@ -852,6 +856,16 @@ function apiParkSum() {
   return api.get(`/tctapi/gis/Parksberth/sum`).then((res: any) => {
     let data = res.data
     sumData.value.berthTotal = data.data[0].berthStatus
+  })
+}
+
+function apiParkDetail(str) {
+  //gis/Parksberth/sum
+  return api.get(`/tctapi/gis/Parksberth/${str}`).then((res: any) => {
+    let data = res.data
+    // sumData.value.berthTotal = data.data[0].berthStatus
+    allParking.value = data.data
+    // console.log('!!!!!!!!', data.data[0])
   })
 }
 /**
