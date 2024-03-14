@@ -204,6 +204,8 @@
       :before-close="handleClose2"
     >
       <div class="dataDetail">
+        <h3>当前地铁站</h3>
+        <span>{{ curStation.nameCn }}</span>
         <h3>车站天气</h3>
         <span>温度{{ Math.ceil(focusDotInfo.valueWenDu) }} ℃</span>
         <span>降水{{ focusDotInfo.valueJiangShui }} mm</span>
@@ -218,13 +220,12 @@
         <h3>公交车站</h3>
         <el-table border :data="allBusDot.value" size="small" height="250" style="width: 100%">
           <!-- <el-table-column prop="date" label="事件时间" /> -->
-          <el-table-column prop="busLineName" label="线路名称" />
           <el-table-column prop="busName" label="车站名称" />
-          <el-table-column label="操作" width="120">
+          <el-table-column prop="busLineName" label="线路名称">
             <template #default="scope">
-              <el-button link type="primary" size="small" @click="handleClick(scope.row)"
-                >查看</el-button
-              >
+              <el-button link type="primary" size="small" @click="handleClick(scope.row)">{{
+                scope.row.busLineName
+              }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -437,7 +438,7 @@ const rule = [
   },
   {
     label: '温度',
-    arr: [-16, -8, 0, 8, 16, 24, 35],
+    arr: [-16, -8, 0, 8, 16, 24, 32],
     colorList: [
       '3, 45, 137',
       '125, 206, 244',
@@ -733,8 +734,27 @@ async function apiWeatherData() {
                 }
               })
               .slice(0, 10)
-          : []
+          : [
+              { value0: '3月14日', value1: '5~22℃', value2: '晴' },
+              { value0: '3月15日', value1: '7~22℃', value2: '晴' },
+              { value0: '3月16日', value1: '7~18℃', value2: '晴' },
+              { value0: '3月17日', value1: '2~14℃', value2: '多云转晴' },
+              { value0: '3月18日', value1: '4~15℃', value2: '晴' },
+              { value0: '3月19日', value1: '3~17℃', value2: '晴' },
+              { value0: '3月20日', value1: '3~17℃', value2: '晴' },
+              { value0: '3月21日', value1: '6~19℃', value2: '晴' }
+            ]
       } else {
+        listWeather.value = [
+          { value0: '3月15日', value1: '-2~13℃', value2: '晴' },
+          { value0: '3月16日', value1: '0~14℃', value2: '晴' },
+          { value0: '3月17日', value1: '2~15℃', value2: '多云转晴' },
+          { value0: '3月18日', value1: '3~16℃', value2: '晴' },
+          { value0: '3月19日', value1: '3~17℃', value2: '晴' },
+          { value0: '3月20日', value1: '3~17℃', value2: '晴' },
+          { value0: '3月21日', value1: '6~19℃', value2: '晴' },
+          { value0: '3月22日', value1: '-2~11℃', value2: '晴' }
+        ]
       }
     } else {
       ElMessage.error(`获取数据时发生异常：${data.msg}`)
@@ -797,6 +817,8 @@ function apiBusDotInfoIn800m(dotid: Number) {
     let data = res.data
     if (data.code == 200) {
       allBusDot.value = data.data
+      allBusDot.value.sort(compareByGender)
+      //
       instance.refs.mapMain.updateLayerBusDot(allBusDot.value, showBusDot.value)
     } else {
       ElMessage.error(`获取数据时发生异常：${data.msg}`)
@@ -804,6 +826,23 @@ function apiBusDotInfoIn800m(dotid: Number) {
   })
 }
 
+function compareByGender(a, b) {
+  // 如果a和b的gender相同，则返回0，表示它们相等
+
+  if (a.busName === b.gender) {
+    return 0
+  }
+
+  // 如果a的gender在b之前（按照某种顺序，比如'female'在'male'之前），则返回-1
+
+  if (a.busName < b.busName) {
+    return -1
+  }
+
+  // 否则，返回1
+
+  return 1
+}
 /**
  * 2.1.2.11 获取地铁站点800米内停车场信息
  */

@@ -284,7 +284,6 @@ const zoomBack = () => {
 const drawLayerTrainDot = (list, showMetroDot) => {
   MetroData.origin = list
   let metros = []
-
   MetroData.mapData = MetroData.origin.map((a: any) => {
     // 点要素的样式信息
     const iconStyle = new Style({
