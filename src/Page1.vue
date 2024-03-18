@@ -199,13 +199,11 @@
     </el-dialog>
     <el-dialog
       v-model="dialogVisible2"
-      title="地铁车站周边"
+      :title="`${curStation.nameCn}地铁车站周边`"
       width="1000"
       :before-close="handleClose2"
     >
       <div class="dataDetail">
-        <h3>当前地铁站</h3>
-        <span>{{ curStation.nameCn }}</span>
         <h3>车站天气</h3>
         <span>温度{{ Math.ceil(focusDotInfo.valueWenDu) }} ℃</span>
         <span>降水{{ focusDotInfo.valueJiangShui }} mm</span>
@@ -349,7 +347,9 @@ let originStationList: any = []
 const weatherLayerList: any = []
 const stationList = ref<any>([])
 const curLine = ref<any>()
-const curStation = ref<any>()
+const curStation = ref<any>({
+  nameCn: ''
+})
 let allStationLoc: any = []
 let lineAllBusDot: any = [] //全线网公交车
 let allBusDot: any = [] //地铁站周边800米全部公交车
@@ -362,6 +362,9 @@ const saveBusInfo = ref({
 })
 // 判断上先行
 const calcDirection = (str, direction) => {
+  if (str.indexOf(')') === -1) {
+    str = str + ')'
+  }
   let returnStr = str.match(/\((.*?)\)/)
   let arrStr = returnStr[1]
   let arr = arrStr.split('--')
