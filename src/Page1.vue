@@ -303,9 +303,9 @@
             {{ scope.row.fullLoad ? (scope.row.fullLoad * 100).toFixed(2) : '' }}
           </template>
         </el-table-column>
-        <el-table-column prop="carNum" label="车牌号"> </el-table-column>
+        <!-- <el-table-column prop="carNum" label="车牌号"> </el-table-column> -->
         <!-- <el-table-column prop="gpsTime" label="gps更新时间"> </el-table-column> -->
-        <el-table-column prop="stationName" label="停靠车站"> </el-table-column>
+        <el-table-column prop="stationName" label="下一站"> </el-table-column>
         <el-table-column prop="distance" label="到站距离(米)">
           <template #default="scope">
             {{ scope.row.distance === '-1' ? '已到站' : scope.row.distance }}
