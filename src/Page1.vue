@@ -216,14 +216,22 @@
         <span>归还数量：{{ bicycleInfo.returnCount || 0 }} 辆</span>
         <span>停放数量：{{ bicycleInfo.stopCount || 0 }} 辆</span>
         <h3>公交车站</h3>
-        <el-table border :data="allBusDot.value" size="small" height="250" style="width: 100%">
+        <!-- {{ allBusDot2 }} -->
+        <el-table border :data="allBusDot2" size="small" height="250" style="width: 100%">
           <!-- <el-table-column prop="date" label="事件时间" /> -->
-          <el-table-column prop="busName" label="车站名称" />
+          <el-table-column prop="label" width="150" label="车站名称" />
           <el-table-column prop="busLineName" label="线路名称">
             <template #default="scope">
-              <el-button link type="primary" size="small" @click="handleClick(scope.row)">{{
-                scope.row.busLineName
-              }}</el-button>
+              <el-button
+                link
+                type="primary"
+                size="small"
+                style="margin: 8px 10px"
+                @click="handleClick(item)"
+                v-for="item in scope.row.list"
+              >
+                {{ item.busLineName }}
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -245,13 +253,45 @@
       </div>
     </el-dialog>
 
+    <el-dialog
+      v-model="dialogVisible5"
+      title="公交车站信息"
+      width="1000"
+      :before-close="handleClose5"
+    >
+      <!-- <p class="bus-info">当前公交站：{{ saveBusInfo.busName }}</p> -->
+      <!-- <p class="bus-info">当前线路名称：{{ saveBusInfo.busLineName }}</p> -->
+      <!-- {{ lineData }} -->
+      <el-table border :data="lineData" size="small" height="250" style="width: 100%">
+        <el-table-column prop="label" width="150" label="车站名称" />
+        <el-table-column prop="busLineName" label="线路名称">
+          <template #default="scope">
+            <el-button
+              link
+              type="primary"
+              size="small"
+              style="margin: 8px 10px"
+              @click="handleClick(item)"
+              v-for="item in scope.row.list"
+            >
+              {{ item.busLineName }}
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
     <el-dialog v-model="dialogVisible3" title="公交信息" width="1000" :before-close="handleClose3">
       <p class="bus-info">当前公交站：{{ saveBusInfo.busName }}</p>
-      <p class="bus-info">当前线路名称：{{ saveBusInfo.busLineName }}</p>
+      <!-- <p class="bus-info">当前线路名称：{{ saveBusInfo.busLineName }}</p> -->
 
-      <el-table border :data="saveBusInfo.list" size="small" height="300" style="width: 100%">
+      <el-table border :data="saveBusInfo.list" size="small" height="600" style="width: 100%">
         <!-- <el-table-column prop="date" label="事件时间" /> -->
-        <el-table-column prop="lineName" label="线路" />
+        <el-table-column prop="lineName" label="线路">
+          <template #default="scope">
+            {{ calclineName(scope.row.lineName) }}
+            <!-- {{ scope.row.direction == 0 ? '上行' : '下行' }} -->
+          </template>
+        </el-table-column>
         <el-table-column prop="direction" label="开往">
           <template #default="scope">
             {{ calcDirection(scope.row.lineName, scope.row.direction) }}
@@ -260,9 +300,12 @@
         </el-table-column>
         <el-table-column prop="fullLoad" label="车辆满载率(%)">
           <template #default="scope">
-            {{ scope.row.fullLoad ? scope.row.fullLoad * 100 : '' }}
+            {{ scope.row.fullLoad ? (scope.row.fullLoad * 100).toFixed(2) : '' }}
           </template>
         </el-table-column>
+        <el-table-column prop="carNum" label="车牌号"> </el-table-column>
+        <!-- <el-table-column prop="gpsTime" label="gps更新时间"> </el-table-column> -->
+        <el-table-column prop="stationName" label="停靠车站"> </el-table-column>
         <el-table-column prop="distance" label="到站距离(米)">
           <template #default="scope">
             {{ scope.row.distance === '-1' ? '已到站' : scope.row.distance }}
@@ -338,6 +381,7 @@ const dialogVisible = ref(false)
 const dialogVisible2 = ref(false)
 const dialogVisible3 = ref(false) // 公交站
 const dialogVisible4 = ref(false) // 停车场站
+const dialogVisible5 = ref(false) // 停车场站
 const activeName = ref('first')
 
 const instance: any = getCurrentInstance()
@@ -352,7 +396,8 @@ const curStation = ref<any>({
 })
 let allStationLoc: any = []
 let lineAllBusDot: any = [] //全线网公交车
-let allBusDot: any = [] //地铁站周边800米全部公交车
+const allBusDot: any = ref([]) //地铁站周边800米全部公交车
+const allBusDot2: any = ref([{ label: '' }]) //地铁站周边800米全部公交车
 let lineAllParking: any = [] //全线网停车站
 const allParking: any = ref([]) // 周边停车场
 const saveBusInfo = ref({
@@ -362,17 +407,21 @@ const saveBusInfo = ref({
 })
 // 判断上先行
 const calcDirection = (str, direction) => {
+  direction = parseInt(direction)
   if (str.indexOf(')') === -1) {
     str = str + ')'
   }
   let returnStr = str.match(/\((.*?)\)/)
   let arrStr = returnStr[1]
-  let arr = arrStr.split('--')
+  let arr = arrStr.split('-')
   console.log(arr, direction)
 
   return arr[direction]
 }
-
+const calclineName = (str) => {
+  let arr = str.split('(')
+  return arr[0]
+}
 const showMetroDot = ref<boolean>(true)
 const showBusDot = ref<boolean>(true)
 const showParking = ref<boolean>(true)
@@ -387,6 +436,8 @@ const handleClickWarningList = (type) => {
   dialogVisible.value = true
   activeName.value = type
 }
+
+const busSumData: any = ref([])
 
 const sumData = ref({
   stopCount: 0,
@@ -405,12 +456,28 @@ const handleClose3 = (done: () => void) => {
 const handleClose4 = (done: () => void) => {
   dialogVisible4.value = false
 }
+const handleClose5 = (done: () => void) => {
+  dialogVisible5.value = false
+}
+const lineData = ref([
+  {
+    label: '',
+    list: []
+  }
+])
 
 // 查询公交车站周边数据
 const clickBusFn = (busName, busLineName) => {
-  dialogVisible3.value = true
   console.log(busName, busLineName)
-  apiBusStopForcast(busName, busLineName)
+  busSumData.value.forEach((item) => {
+    if (busName === item.label) {
+      console.log(item)
+      lineData.value = [item]
+      dialogVisible5.value = true
+    }
+  })
+
+  // apiBusStopForcast(busName, busLineName)
 }
 
 const clickParkFn = (parkId) => {
@@ -508,7 +575,12 @@ onMounted(async () => {
 
 const handleClick = (obj) => {
   dialogVisible3.value = true
-  apiBusStopForcast(obj.busName, obj.busLineName)
+  saveBusInfo.value.busName = obj.busName
+  saveBusInfo.value.busLineName = obj.busLineName
+  // apiBusStopForcast(obj.busName, obj.busLineName)
+  saveBusInfo.value.list = []
+  apiBusAllData(obj.busLineName, 0)
+  apiBusAllData(obj.busLineName, 1)
 }
 
 function apiBusStopForcast(busName, busLineName) {
@@ -531,13 +603,40 @@ function apiBusDotInfoInAll() {
   return api.get(`/tctapi/gis/BusStationsAll`).then((res: any) => {
     let data = res.data
     if (data.code == 200) {
-      lineAllBusDot.value = data.data
+      // 线路去重逻辑
+      let save = []
+      let arr = []
+
+      data.data.forEach((item) => {
+        if (save.indexOf(item.busName) === -1) {
+          save.push(item.busName)
+          arr.push(item)
+        }
+      })
+      let calcArr = []
+      save.forEach((item) => {
+        calcArr.push({
+          label: item,
+          list: []
+        })
+      })
+      data.data.forEach((item) => {
+        calcArr.forEach((item2) => {
+          if (item2.label === item.busName) {
+            item2.list.push(item)
+          }
+        })
+      })
+      busSumData.value = calcArr
+      lineAllBusDot.value = arr
+      // lineAllBusDot.value = data.data
       // instance.refs.mapMain.updateLayerBusDot(allBusDot.value, showBusDot.value)
     } else {
       ElMessage.error(`获取数据时发生异常：${data.msg}`)
     }
   })
 }
+
 function apiParkingDotInfoInAll() {
   return api.get(`/tctapi/gis/ParkLoc`).then((res: any) => {
     let data = res.data
@@ -556,6 +655,18 @@ async function apiBeijingWeather() {
     let data = res.data
     if (data.code == 200) {
       focusDotInfoBj.value = data.data
+    }
+  })
+}
+
+// 获取线路车站
+async function apiBusAllData(str, direction) {
+  return api.get(`/tctapi/gis/BusLineForcast/${str}/${direction}`).then((res: any) => {
+    let data = res.data
+    if (data.code == 200) {
+      data.data.forEach((item) => {
+        saveBusInfo.value.list.push(item)
+      })
     }
   })
 }
@@ -821,8 +932,35 @@ function apiBusDotInfoIn800m(dotid: Number) {
     if (data.code == 200) {
       allBusDot.value = data.data
       allBusDot.value.sort(compareByGender)
-      //
-      instance.refs.mapMain.updateLayerBusDot(allBusDot.value, showBusDot.value)
+
+      let save = []
+      let arr = []
+
+      data.data.forEach((item) => {
+        if (save.indexOf(item.busName) === -1) {
+          save.push(item.busName)
+          arr.push(item)
+        }
+      })
+
+      let calcArr = []
+      save.forEach((item) => {
+        calcArr.push({
+          label: item,
+          list: []
+        })
+      })
+      data.data.forEach((item) => {
+        calcArr.forEach((item2) => {
+          if (item2.label === item.busName) {
+            item2.list.push(item)
+          }
+        })
+      })
+      allBusDot2.value = calcArr
+      // lineAllBusDot.value = arr
+
+      instance.refs.mapMain.updateLayerBusDot(arr, showBusDot.value)
     } else {
       ElMessage.error(`获取数据时发生异常：${data.msg}`)
     }
@@ -835,8 +973,6 @@ function compareByGender(a, b) {
   if (a.busName === b.gender) {
     return 0
   }
-
-  // 如果a的gender在b之前（按照某种顺序，比如'female'在'male'之前），则返回-1
 
   if (a.busName < b.busName) {
     return -1
