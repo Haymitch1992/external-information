@@ -305,7 +305,13 @@
         </el-table-column>
         <!-- <el-table-column prop="carNum" label="车牌号"> </el-table-column> -->
         <!-- <el-table-column prop="gpsTime" label="gps更新时间"> </el-table-column> -->
-        <el-table-column prop="stationName" label="下一站"> </el-table-column>
+        <el-table-column prop="stationName" label="下一站">
+          <template #default="scope">
+            <span :class="{ 'active-text': scope.row.stationName === saveBusInfo.busName }">{{
+              scope.row.stationName
+            }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="distance" label="到站距离(米)">
           <template #default="scope">
             {{ scope.row.distance === '-1' ? '已到站' : scope.row.distance }}
@@ -849,25 +855,25 @@ async function apiWeatherData() {
               })
               .slice(0, 10)
           : [
-              { value0: '3月14日', value1: '5~22℃', value2: '晴' },
-              { value0: '3月15日', value1: '7~22℃', value2: '晴' },
-              { value0: '3月16日', value1: '7~18℃', value2: '晴' },
-              { value0: '3月17日', value1: '2~14℃', value2: '多云转晴' },
-              { value0: '3月18日', value1: '4~15℃', value2: '晴' },
-              { value0: '3月19日', value1: '3~17℃', value2: '晴' },
-              { value0: '3月20日', value1: '3~17℃', value2: '晴' },
-              { value0: '3月21日', value1: '6~19℃', value2: '晴' }
+              { value0: '3月21日', value1: '5~22℃', value2: '晴' },
+              { value0: '3月22日', value1: '7~22℃', value2: '晴' },
+              { value0: '3月23日', value1: '7~18℃', value2: '晴' },
+              { value0: '3月24日', value1: '2~14℃', value2: '多云转晴' },
+              { value0: '3月25日', value1: '4~15℃', value2: '晴' },
+              { value0: '3月26日', value1: '3~17℃', value2: '晴' },
+              { value0: '3月27日', value1: '3~17℃', value2: '晴' },
+              { value0: '3月28日', value1: '6~19℃', value2: '晴' }
             ]
       } else {
         listWeather.value = [
-          { value0: '3月15日', value1: '-2~13℃', value2: '晴' },
-          { value0: '3月16日', value1: '0~14℃', value2: '晴' },
-          { value0: '3月17日', value1: '2~15℃', value2: '多云转晴' },
-          { value0: '3月18日', value1: '3~16℃', value2: '晴' },
-          { value0: '3月19日', value1: '3~17℃', value2: '晴' },
-          { value0: '3月20日', value1: '3~17℃', value2: '晴' },
-          { value0: '3月21日', value1: '6~19℃', value2: '晴' },
-          { value0: '3月22日', value1: '-2~11℃', value2: '晴' }
+          { value0: '3月21日', value1: '5~22℃', value2: '晴' },
+          { value0: '3月22日', value1: '7~22℃', value2: '晴' },
+          { value0: '3月23日', value1: '7~18℃', value2: '晴' },
+          { value0: '3月24日', value1: '2~14℃', value2: '多云转晴' },
+          { value0: '3月25日', value1: '4~15℃', value2: '晴' },
+          { value0: '3月26日', value1: '3~17℃', value2: '晴' },
+          { value0: '3月27日', value1: '3~17℃', value2: '晴' },
+          { value0: '3月28日', value1: '6~19℃', value2: '晴' }
         ]
       }
     } else {
@@ -1393,5 +1399,9 @@ i::selection {
   span:hover {
     background: #165264;
   }
+}
+.active-text {
+  color: #2aba9a;
+  background-color: #e4f500;
 }
 </style>
