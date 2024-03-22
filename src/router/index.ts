@@ -10,6 +10,7 @@ export const constantRoutes = [
     component: () => import('@/Page2.vue'),
     hidden: true
   }
+
 ]
 
 let routes = [...constantRoutes]

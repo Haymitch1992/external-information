@@ -673,7 +673,23 @@ async function apiBusAllData(str, direction) {
       data.data.forEach((item) => {
         saveBusInfo.value.list.push(item)
       })
+      // 根据当前车站 进行排序
+      saveBusInfo.value.list = sortStations(saveBusInfo.value.list)
     }
+  })
+}
+const sortStations = (stations) => {
+  return stations.sort((a, b) => {
+    // 如果a的name是'北京站'，则它应该排在b前面
+    if (a.stationName === saveBusInfo.value.busName) {
+      return -1
+    }
+    // 如果b的name是'北京站'，则它应该排在a前面
+    if (b.stationName === saveBusInfo.value.busName) {
+      return 1
+    }
+    // 如果都不是'北京站'，则按字母顺序排序
+    return a.stationName.localeCompare(b.stationName)
   })
 }
 
@@ -855,7 +871,7 @@ async function apiWeatherData() {
               })
               .slice(0, 10)
           : [
-              { value0: '3月21日', value1: '5~22℃', value2: '晴' },
+              { value0: '3月21日', value1: '5~17℃', value2: '多云转晴' },
               { value0: '3月22日', value1: '7~22℃', value2: '晴' },
               { value0: '3月23日', value1: '7~18℃', value2: '晴' },
               { value0: '3月24日', value1: '2~14℃', value2: '多云转晴' },
@@ -866,7 +882,7 @@ async function apiWeatherData() {
             ]
       } else {
         listWeather.value = [
-          { value0: '3月21日', value1: '5~22℃', value2: '晴' },
+          { value0: '3月21日', value1: '5~17℃', value2: '多云转晴' },
           { value0: '3月22日', value1: '7~22℃', value2: '晴' },
           { value0: '3月23日', value1: '7~18℃', value2: '晴' },
           { value0: '3月24日', value1: '2~14℃', value2: '多云转晴' },
