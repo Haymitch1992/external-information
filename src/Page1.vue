@@ -871,25 +871,25 @@ async function apiWeatherData() {
               })
               .slice(0, 10)
           : [
-              { value0: '3月21日', value1: '5~17℃', value2: '多云转晴' },
-              { value0: '3月22日', value1: '7~22℃', value2: '晴' },
-              { value0: '3月23日', value1: '7~18℃', value2: '晴' },
-              { value0: '3月24日', value1: '2~14℃', value2: '多云转晴' },
-              { value0: '3月25日', value1: '4~15℃', value2: '晴' },
-              { value0: '3月26日', value1: '3~17℃', value2: '晴' },
-              { value0: '3月27日', value1: '3~17℃', value2: '晴' },
-              { value0: '3月28日', value1: '6~19℃', value2: '晴' }
+              // { value0: '3月21日', value1: '5~17℃', value2: '多云转晴' },
+              // { value0: '3月22日', value1: '7~22℃', value2: '晴' },
+              // { value0: '3月23日', value1: '7~18℃', value2: '晴' },
+              // { value0: '3月24日', value1: '2~14℃', value2: '多云转晴' },
+              // { value0: '3月25日', value1: '4~15℃', value2: '晴' },
+              // { value0: '3月26日', value1: '3~17℃', value2: '晴' },
+              // { value0: '3月27日', value1: '3~17℃', value2: '晴' },
+              // { value0: '3月28日', value1: '6~19℃', value2: '晴' }
             ]
       } else {
         listWeather.value = [
-          { value0: '3月21日', value1: '5~17℃', value2: '多云转晴' },
-          { value0: '3月22日', value1: '7~22℃', value2: '晴' },
-          { value0: '3月23日', value1: '7~18℃', value2: '晴' },
-          { value0: '3月24日', value1: '2~14℃', value2: '多云转晴' },
-          { value0: '3月25日', value1: '4~15℃', value2: '晴' },
-          { value0: '3月26日', value1: '3~17℃', value2: '晴' },
-          { value0: '3月27日', value1: '3~17℃', value2: '晴' },
-          { value0: '3月28日', value1: '6~19℃', value2: '晴' }
+          // { value0: '3月21日', value1: '5~17℃', value2: '多云转晴' },
+          // { value0: '3月22日', value1: '7~22℃', value2: '晴' },
+          // { value0: '3月23日', value1: '7~18℃', value2: '晴' },
+          // { value0: '3月24日', value1: '2~14℃', value2: '多云转晴' },
+          // { value0: '3月25日', value1: '4~15℃', value2: '晴' },
+          // { value0: '3月26日', value1: '3~17℃', value2: '晴' },
+          // { value0: '3月27日', value1: '3~17℃', value2: '晴' },
+          // { value0: '3月28日', value1: '6~19℃', value2: '晴' }
         ]
       }
     } else {
