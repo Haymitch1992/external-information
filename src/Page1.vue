@@ -99,6 +99,14 @@
       <Container2 title="综合交通数据" style="position: fixed; left: 10px; top: 80px">
         <!--  -->
         <div class="sumItem">
+          <h2>交通拥堵指数</h2>
+          <h1>
+            <count-up
+              :end-val="sumData.latestTrafficIndex"
+              :duration="2.5"
+              :decimal-places="2"
+            ></count-up>
+          </h1>
           <h2>道路公交车总数(辆)</h2>
           <h1>
             <count-up :end-val="sumData.busCount" :duration="2.5" :decimal-places="0"></count-up>
@@ -112,14 +120,6 @@
             <count-up :end-val="sumData.berthTotal" :duration="2.5" :decimal-places="0"
               >辆</count-up
             >
-          </h1>
-          <h2>交通拥堵指数</h2>
-          <h1>
-            <count-up
-              :end-val="sumData.latestTrafficIndex"
-              :duration="2.5"
-              :decimal-places="2"
-            ></count-up>
           </h1>
         </div>
 
