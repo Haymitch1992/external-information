@@ -113,11 +113,19 @@
               >辆</count-up
             >
           </h1>
+          <h2>交通拥堵指数</h2>
+          <h1>
+            <count-up
+              :end-val="sumData.latestTrafficIndex"
+              :duration="2.5"
+              :decimal-places="2"
+            ></count-up>
+          </h1>
         </div>
 
         <!-- <ColorTable name1="车站" name2="雨量（mm）" :list="listJiangYu" /> -->
       </Container2>
-      <Container2 title="公路事件列表" style="position: fixed; left: 10px; top: 580px">
+      <Container2 title="地铁舆情监视" style="position: fixed; left: 10px; top: 580px">
         <ul class="event-ul" @click="handleClickWarningList('second')">
           <li v-for="item in highwayListWarning.slice(0, 10)">
             【{{ timeFliter(item.createTm) }}】{{ item.content }}
@@ -178,7 +186,7 @@
               <el-table-column prop="content" label="事件名称" />
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="道路事件" name="second">
+          <el-tab-pane label="地铁舆情" name="second">
             <el-table border :data="highwayListWarning" height="500" style="width: 100%">
               <el-table-column prop="createTm" label="事件时间">
                 <template #default="scope">
@@ -448,7 +456,8 @@ const busSumData: any = ref([])
 const sumData = ref({
   stopCount: 0,
   busCount: 0,
-  berthTotal: 0
+  berthTotal: 0,
+  latestTrafficIndex: 0
 })
 const handleClose = (done: () => void) => {
   dialogVisible.value = false
@@ -561,10 +570,12 @@ onMounted(async () => {
   apiBicycleSum()
   apiBusSum()
   apiParkSum()
+  apilatestTrafficIndex()
   var timerapiBicycleSum = setInterval(() => {
     apiBicycleSum()
     apiBusSum()
     apiParkSum()
+    apilatestTrafficIndex()
   }, 1000 * 30)
 
   _combineBaseData()
@@ -651,6 +662,18 @@ function apiParkingDotInfoInAll() {
       // instance.refs.mapMain.updateLayerBusDot(allBusDot.value, showBusDot.value)
     } else {
       ElMessage.error(`获取数据时发生异常：${data.msg}`)
+    }
+  })
+}
+
+// 获取交通拥堵指数
+async function apilatestTrafficIndex() {
+  return api.get(`/tctapi/gis/latestTrafficIndex`).then((res: any) => {
+    let data = res.data
+    console.log('123', data.data.index)
+    sumData.value.latestTrafficIndex = data.data.index
+    if (data.code == 200) {
+      // focusDotInfoBj.value = data.data
     }
   })
 }
@@ -1090,21 +1113,22 @@ async function apiWarningData() {
 async function apiHighwayWarningData() {
   // 获取时间
   let startDate = dayjs().format('YYYYMMDD')
-  let postdata = {
-    startDate: '20240307',
-    endDate: startDate,
-    sortColumn: '1',
-    sortAsc: true,
-    pageNum: 1,
-    pagesize: 5
-  }
-  return api.post(`/tctapi/gis/highwayinfoindate`, postdata).then((res: any) => {
+  // let postdata = {
+  //   startDate: '20240307',
+  //   endDate: startDate,
+  //   sortColumn: '1',
+  //   sortAsc: true,
+  //   pageNum: 1,
+  //   pagesize: 5
+  // }
+  // highwayinfoindate postdata
+  return api.get(`/tctapi/gis/subwayENews`).then((res: any) => {
     let data = res.data
     if (data.code == 200) {
       highwayListWarning.value = data.data.map((a: any) => {
         return {
-          content: a.describe,
-          createTm: a.createTm,
+          content: a.discribe,
+          createTm: a.createTime,
           visible: true
         }
       })
@@ -1146,15 +1170,15 @@ const timeFliter = (str) => {
   let returnStr =
     str.slice(0, 4) +
     '-' +
-    str.slice(4, 6) +
+    str.slice(5, 7) +
     '-' +
-    str.slice(6, 8) +
-    ' ' +
     str.slice(8, 10) +
+    ' ' +
+    str.slice(11, 13) +
     ':' +
-    str.slice(10, 12) +
+    str.slice(14, 16) +
     ':' +
-    str.slice(12, 14)
+    str.slice(17, 19)
   return returnStr
 }
 </script>
@@ -1318,17 +1342,17 @@ i::selection {
   h1 {
     color: #2aba9a;
     background-color: #06252e;
-    font-size: 50px;
+    font-size: 40px;
     margin: 0;
     padding: 0;
-    line-height: 80px;
+    line-height: 56px;
     margin-bottom: 10px;
   }
   h2 {
     font-size: 18px;
     background-color: #06252e;
     margin: 0;
-    padding: 20px 0 0px;
+    padding: 10px 0 0px;
   }
 }
 .layerBtn {
