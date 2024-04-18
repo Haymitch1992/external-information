@@ -126,6 +126,12 @@
         <!-- <ColorTable name1="车站" name2="雨量（mm）" :list="listJiangYu" /> -->
       </Container2>
       <Container2 title="地铁舆情监视" style="position: fixed; left: 10px; top: 580px">
+        <p class="add-line">
+          总数
+          <span>7278</span>
+        </p>
+        <p class="add-line">证明中性信息<span>7272</span></p>
+        <p class="add-line">反应问题表达诉求信息<span>14</span></p>
         <ul class="event-ul" @click="handleClickWarningList('second')">
           <li v-for="item in highwayListWarning.slice(0, 10)">
             【{{ timeFliter(item.createTm) }}】{{ item.content }}
@@ -1290,6 +1296,20 @@ const timeFliter = (str) => {
   color: white !important;
 }
 
+.add-line {
+  font-size: 14px;
+  text-align: left;
+  padding: 0%;
+  margin: 0 0 4px 0;
+  border-radius: 4px;
+  line-height: 24px;
+  background: #07222b;
+  span {
+    color: #2aba9a;
+    font-weight: bold;
+    margin: 0 4px;
+  }
+}
 .location {
   position: fixed;
   left: 10px;
